@@ -953,9 +953,9 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="the-forward-pass">The Forward Pass</h3>
 <p>Instead of a single one-hot vector, we use a batch matrix X of shape (<span class="math inline">\(N \times V\)</span>), where each row is the one-hot encoding (OHE) of a center word.</p>
 <p>Hidden Layer (H): We extract the center word embeddings. Notice that this is not a new concept. H is just holding rows of <span class="math inline">\(\mathbf{v}_t\)</span> for different values of t (N of them).</p>
-<p><span class="math display">\[H = XW_1 \text{ with shapes } (N \times V) @ (V \times d) -&gt; (N \times d)\]</span>.</p>
+<p><span class="math display">\[H = XW_1 \text{ with shapes } (N \times V) @ (V \times d) \to (N \times d)\]</span>.</p>
 <p>As said earlier, each row in H correspond to one of the center word (for example, the <span class="math inline">\(\mathbf{v}_t^T\)</span> from previous discussions is now a row).</p>
-<p>Output Scores (S): <span class="math display">\[S= HW_2    \text{ with shapes }   (N \times d) @ (d \times V) -&gt; (N \times V)\]</span></p>
+<p>Output Scores (S): <span class="math display">\[S= HW_2    \text{ with shapes }   (N \times d) @ (d \times V) \to (N \times V)\]</span></p>
 <p>Predictions (<span class="math inline">\(\hat{Y}\)</span>): We apply the softmax function row-wise to convert scores into probabilities. <span class="math display">\[\hat{Y} = softmax(S, dim=1) \text{ with no change in shape, }  (N \times V)\]</span></p>
 </section>
 <section id="the-target-matrix" class="level3">
