@@ -981,15 +981,15 @@ window.Quarto = {
 <p>By treating the average loss J as our objective function, we calculate its rate of change with respect to every parameter in <span class="math inline">\(W_1\)</span> and <span class="math inline">\(W_2\)</span>. Since each item in the batch is a separate pass through the network, the resulting gradient is the average of the individual gradients for those N samples, providing a more stable update signal than a single-word pass.</p>
 <p>The power of the Cross-Entropy loss combined with Softmax is that the derivative simplifies significantly. The error signal E represents the difference between our predictions and the ground truth.</p>
 <p>The Error Matrix (E):</p>
-<p><span class="math display">\[E = \frac{1}{N}(\hat{Y}-Y) (N \times V)\]</span></p>
+<p><span class="math display">\[E = \frac{1}{N}(\hat{Y}-Y) \text{ with shape } (N \times V)\]</span></p>
 <p>Each row i in E is the “error vector” for sample i, showing how far our probabilities <span class="math inline">\(\bar{y}_i\)</span> were from the one-hot target <span class="math inline">\(y_i\)</span>.</p>
 <p>Updating the Output Matrix (<span class="math inline">\(W_2\)</span>):</p>
 <p>We calculate the gradient for the output embeddings by multiplying the hidden states H by the error E.</p>
-<p><span class="math display">\[dW_2 = E(W_2)^T (N \times V) @ (V \times d) \to (N \times d)\]</span></p>
+<p><span class="math display">\[dW_2 = E(W_2)^T \text{ with shapes } (N \times V) @ (V \times d) \to (N \times d)\]</span></p>
 <p>Updating the Input Matrix (<span class="math inline">\(W_1\)</span>):</p>
 <p>First, we find the gradient for the hidden layer H, then map it back to the specific center words in <span class="math inline">\(W_1\)</span> using the selection matrix X.</p>
-<p><span class="math display">\[dH = E@(W_2)^T (N \times V) @ (V \times d) \to (N \times d)\]</span></p>
-<p><span class="math display">\[dW_1 = X^T@dH (V \times N) @ (N \times d) \to (V \times d)\]</span></p>
+<p><span class="math display">\[dH = E@(W_2)^T \text{ with shapes }(N \times V) @ (V \times d) \to (N \times d)\]</span></p>
+<p><span class="math display">\[dW_1 = X^T@dH \text{ with shapes } (V \times N) @ (N \times d) \to (V \times d)\]</span></p>
 <p>Finally, we update the parameters using the learning rate <span class="math inline">\(\eta\)</span>:</p>
 <p><span class="math display">\[W_1 \leftarrow W_1 - \eta * dW_1\]</span> <span class="math display">\[W_2 \leftarrow W_2 - \eta * dW_2\]</span></p>
 <p>This completes the cycle: the Forward Pass generates a prediction, the Loss Function measures the error, and the Backward Pass (Gradients) tells us exactly how to nudge our word vectors to improve the next prediction.</p>
