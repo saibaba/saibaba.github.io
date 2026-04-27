@@ -158,6 +158,7 @@ window.Quarto = {
 <p><span class="math inline">\(\text{queen} - \text{king} = \text{river} - \text{man} = 2\)</span></p>
 <p>Neither of these relationships has any linguistic basis. Worse, any arithmetic we perform on these integers — addition, multiplication, distance — produces numbers that mean nothing. A model trained on integer word indices would be forced to learn that “queen” (index 2) is somehow “between” “man” (index 1) and “river” (index 3), which is nonsense.</p>
 <p>We need a representation that carries no spurious relationships between words — a blank slate where every word starts as equally unrelated to every other word, and structure is only introduced by the data – by training the model on the real data.</p>
+<p>Before moving on we should clarify one thing. What doe word “related” mean in this context? The ones that share same semantic concept (animals or places or roles things like that) are called “related”.</p>
 </section>
 </section>
 <section id="second-attempt-one-hot-encoding-ohe-integers-as-indices" class="level3">
@@ -189,10 +190,11 @@ window.Quarto = {
 <blockquote class="blockquote">
 <p>You shall know a word by the company it keeps.</p>
 </blockquote>
-<p>This is the distributional hypothesis: words that appear in similar contexts tend to have similar meanings. This isn’t just a poetic observation — it’s a falsifiable, empirically powerful claim that underlies virtually all of modern NLP.</p>
+<p>This is the distributional hypothesis: words that appear in similar contexts tend to have similar semantics/meanings. This isn’t just a poetic observation — it’s a falsifiable, empirically powerful claim that underlies virtually all of modern NLP.</p>
 <p>The intuition is this: you don’t need a dictionary to understand a new word. If you encounter the word “wampimuk” in the sentence “The wampimuk scurried across the forest floor and hid under a log,” you immediately infer it’s a small animal — not because you know the word, but because of the words surrounding it. <code>Context carries meaning</code>.</p>
-<section id="a-concrete-example-the-word-bank" class="level4">
-<h4 class="anchored" data-anchor-id="a-concrete-example-the-word-bank">A Concrete Example: The Word “Bank”</h4>
+</section>
+<section id="a-concrete-example-the-word-bank" class="level3">
+<h3 class="anchored" data-anchor-id="a-concrete-example-the-word-bank">A Concrete Example: The Word “Bank”</h3>
 <p>Consider the word “bank” in two different contexts:</p>
 <p><strong>Context A</strong> — “The fisherman sat on the bank of the river, watching the water flow past.”</p>
 <p>Neighboring words: fisherman, river, water, flow, sat</p>
@@ -211,8 +213,17 @@ window.Quarto = {
 <p>Now if <code>war</code> occurs not as often it may be farther from king/emperor/princess. Eventually positional relationship is used to create a (vector) spatial relationship.</p>
 <p>Now, as a side effect we will have synonyms nearby (like <code>king</code> and <code>emperor</code> above).</p>
 <p>As in OHE, if the vector space has the same dimension as the size of vocabulary, we may not be able to force them come to close, but if we have lower dimension, we may be able to. In a way this is similar to matrix decomposition into a lower rank. See appendices for more on this.</p>
-<p>Word2Vec offers a powerful framework for learning word embeddings — but it is not without limitations. Some of these shortcomings, such as the inability to model asymmetric attention and context-dependent meaning, require a fundamentally different architecture to address. An appendix offers a brief look at how Transformers begin to overcome these limitations.</p>
 </section>
+<section id="limitations" class="level3">
+<h3 class="anchored" data-anchor-id="limitations">Limitations</h3>
+<p>The core idea that Word2Vec (distributional hypothesis) hinges on is that word embeddings is the: words that appear in similar contexts tend to have similar meanings.</p>
+<p>Take the sentence: “Guitars are essential instruments in rock music.”</p>
+<p>You could swap guitars with drums and the sentence still makes perfect sense — “Drums are essential instruments in rock music.” Both are musical instruments, they show up in overlapping contexts, and the substitution feels natural. You could even swap in violins — a different family of instrument, but the sentence remains plausible because violins are still instruments used in music. Now try replacing guitars with refrigerators: “Refrigerators are essential instruments in rock music.” That’s nonsensical. Or replace it with quickly: “Quickly are essential instruments in rock music.” Now it’s not even grammatically valid.</p>
+<p>This is exactly what embedding models learn. Words like guitar, drums, and violin end up close together in vector space because they repeatedly appear in similar surrounding contexts during training. Words like refrigerator or quickly land far away because they occupy entirely different contexts.</p>
+<p>But there is a problem too, the polysemous words - words that carry multiple related-but-distinct meanings.</p>
+<p>Consider the word spring: - As a noun, it can mean a season (“Spring is my favorite time of year”) - It can also mean a coiled metal device (“The spring in the mattress broke”) - It can mean a water source (“We found a natural spring in the hills”) - As a verb, it means to leap (“The cat will spring off the table”)</p>
+<p>Each of these meanings lives in a completely different context. A sentence about seasons has nothing in common with a sentence about mattress components. A single static embedding vector (like the one in word2vec that we study in this article) struggles to capture all of these meanings at once — it ends up as a blurred average that doesn’t fully represent any one meaning well.</p>
+<p>Word2Vec is a powerful framework for learning word embeddings, but it has real limitations. It can’t model asymmetric relationships between words, and it assigns a single fixed vector per word — so it has no way to capture context-dependent meaning. These shortcomings motivated a fundamentally different architecture: the Transformer. Models like BERT and GPT build on this architecture to produce contextual embeddings, generating a different vector for the same word depending on the sentence it appears in.</p>
 </section>
 <section id="the-bridge-from-concepts-to-mathematics---dense-embedding-vectors" class="level3">
 <h3 class="anchored" data-anchor-id="the-bridge-from-concepts-to-mathematics---dense-embedding-vectors">The bridge from concepts to mathematics - Dense Embedding Vectors</h3>
