@@ -1491,11 +1491,7 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <p>When A and B are vectors, say:</p>
 <p><span class="math inline">\(A \in R^p\)</span></p>
 <p><span class="math inline">\(B \in R^q\)</span></p>
-$A _{kron} B =
-<span class="math display">\[\begin{bmatrix} a_{1} B  \\ \vdots \\ a_{p} B \end{bmatrix}\]</span>
-=
-<span class="math display">\[\begin{bmatrix} a_{1} b_1 \\ a_1 b_2 \\ \vdots \\ a_1 b_q \\ \vdots \\ a_{p} b_1 \\ a_p b_2 \\ \vdots \\ a_p b_q \end{bmatrix}\]</span>
-<p>= vec( A _{outer} B) $</p>
+<p><span class="math inline">\(A \otimes_{kron} B = \begin{bmatrix} a_{1} B  \\ \vdots \\ a_{p} B \end{bmatrix} = \begin{bmatrix} a_{1} b_1 \\ a_1 b_2 \\ \vdots \\ a_1 b_q \\ \vdots \\ a_{p} b_1 \\ a_p b_2 \\ \vdots \\ a_p b_q \end{bmatrix} = vec( A \otimes_{outer} B)e\)</span></p>
 <p><strong>Outer product</strong></p>
 <p><span class="math inline">\(A \in R^p\)</span></p>
 <p><span class="math inline">\(B \in R^q\)</span></p>
