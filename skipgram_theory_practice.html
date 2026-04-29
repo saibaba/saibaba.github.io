@@ -221,7 +221,7 @@ window.Quarto = {
 <p>You could swap guitars with drums and the sentence still makes perfect sense — “Drums are essential instruments in rock music.” Both are musical instruments, they show up in overlapping contexts, and the substitution feels natural. You could even swap in violins — a different family of instrument, but the sentence remains plausible because violins are still instruments used in music. Now try replacing guitars with refrigerators: “Refrigerators are essential instruments in rock music.” That’s nonsensical. Or replace it with quickly: “Quickly are essential instruments in rock music.” Now it’s not even grammatically valid.</p>
 <p>This is exactly what embedding models learn. Words like guitar, drums, and violin end up close together in vector space because they repeatedly appear in similar surrounding contexts during training. Words like refrigerator or quickly land far away because they occupy entirely different contexts.</p>
 <p>But there is a problem too, the polysemous words - words that carry multiple related-but-distinct meanings.</p>
-<p>Consider the word spring: - As a noun, it can mean a season (“Spring is my favorite time of year”) - It can also mean a coiled metal device (“The spring in the mattress broke”) - It can mean a water source (“We found a natural spring in the hills”) - As a verb, it means to leap (“The cat will spring off the table”)</p>
+<p>Consider the word spring: * As a noun, it can mean a season (“Spring is my favorite time of year”) * It can also mean a coiled metal device (“The spring in the mattress broke”) * It can mean a water source (“We found a natural spring in the hills”) * As a verb, it means to leap (“The cat will spring off the table”)</p>
 <p>Each of these meanings lives in a completely different context. A sentence about seasons has nothing in common with a sentence about mattress components. A single static embedding vector (like the one in word2vec that we study in this article) struggles to capture all of these meanings at once — it ends up as a blurred average that doesn’t fully represent any one meaning well.</p>
 <p>Word2Vec is a powerful framework for learning word embeddings, but it has real limitations. It can’t model asymmetric relationships between words, and it assigns a single fixed vector per word — so it has no way to capture context-dependent meaning. These shortcomings motivated a fundamentally different architecture: the Transformer. Models like BERT and GPT build on this architecture to produce contextual embeddings, generating a different vector for the same word depending on the sentence it appears in.</p>
 </section>
@@ -313,7 +313,7 @@ window.Quarto = {
 <p>We use <span class="math inline">\(\theta\)</span> to represent all of the 2 * d * V parameters from <span class="math inline">\(W_1\)</span> and <span class="math inline">\(W_2\)</span> matrices above.</p>
 <p>Here we are making forward references to the gradient descent process, it will be more clear once we go through it.</p>
 <p>In summary:</p>
-<p>In Skip-gram, every word plays two roles: sometimes it’s the center word predicting context, sometimes it’s a context word being predicted. These are fundamentally different jobs — like being a teacher vs.&nbsp;a student. If we force the same embedding to do both, we create conflicts because language relationships are directional and asymmetric (king→rules is different from obey→king). So Word2Vec uses two embedding matrices: one for the center role (<span class="math inline">\(W_1\)</span>) and one for the context role (<span class="math inline">\(W_2\)</span>). This gives the model flexibility to capture asymmetric relationships without forcing them into a symmetric structure. After training, we keep W as the final embeddings and discard W’ — it was just scaffolding to help W learn richer representations.</p>
+<p>In Skip-gram, every word plays two roles: sometimes it’s the center word predicting context, sometimes it’s a context word being predicted. These are fundamentally different jobs — like being a teacher vs.&nbsp;a student. If we force the same embedding to do both, we create conflicts because language relationships are directional and asymmetric (king→rules is different from obey→king). So Word2Vec uses two embedding matrices: one for the center role (<span class="math inline">\(W_1\)</span>) and one for the context role (<span class="math inline">\(W_2\)</span>). This gives the model flexibility to capture asymmetric relationships without forcing them into a symmetric structure. After training, we keep <span class="math inline">\(W_1\)</span> as the final embeddings and discard <span class="math inline">\(W_2\)</span> — it was just scaffolding to help <span class="math inline">\(W_1\)</span> learn richer representations.</p>
 <p>If you want, you can pause here and look at a couple of appendices to learn more about what happens if we use the same embedding vector for a word both when it is a center word and when it is a context word: (1) Positive Semi Definite Matrix (2) Shared vs.&nbsp;separate embeddings.</p>
 </section>
 <section id="from-raw-scores-to-probability-the-softmax" class="level3">
@@ -446,7 +446,7 @@ window.Quarto = {
 <p>For the true context word <span class="math inline">\(c\)</span>:</p>
 <p>First note that, <span class="math display">\[\frac{\partial \mathcal{L_c}}{\partial \mathbf{u}_c} log \sum_{w \in V} exp(\mathbf{u}_w^T\mathbf{v}_t) = P(c \mid t) \cdot \mathbf{v}_t\]</span>. So,</p>
 <p><span class="math display">\[\frac{\partial \mathcal{L_{c}}}{\partial \mathbf{u}_c} = -\mathbf{v}_t + P(c \mid t) \cdot \mathbf{v}_t = -(1 - P(c \mid t)) \cdot \mathbf{v}_t\]</span></p>
-<p>But, we need to update parameters in W’ for the words who are not context words as well. So, for any other word <span class="math inline">\(w \neq c\)</span>:</p>
+<p>But, we need to update parameters in <span class="math inline">\(W_2\)</span> for the words who are not context words as well. So, for any other word <span class="math inline">\(w \neq c\)</span>:</p>
 <p><span class="math display">\[\frac{\partial \mathcal{L_{c}}}{\partial \mathbf{u}_w} = P(w \mid t) \cdot \mathbf{v}_t\]</span></p>
 <p>These two cases unify cleanly with an indicator variable:</p>
 <p><span class="math display">\[\boxed{\frac{\partial \mathcal{L_{c}}}{\partial \mathbf{u}_w} = \bigl(P(w \mid t) - \mathbf{1}[w = c]\bigr) \cdot \mathbf{v}_t}\]</span></p>
@@ -868,7 +868,7 @@ window.Quarto = {
 <p>Assembling for all k = 1 to d:</p>
 <p><span class="math inline">\((dW_1)_t = \begin{bmatrix}\sum_{i=1}^{V} u_{i1} * E_i &amp;&amp; \sum_{i=1}^{V} u_{i2} * E_i &amp;&amp; \dots &amp;&amp; \sum_{i=1}^{V} u_{id} * E_i \end{bmatrix} = \sum_{i=1}^{V}  \begin{bmatrix} u_{i1} * E_i &amp;&amp; u_{i2} * E_i &amp;&amp; \dots &amp;&amp; u_{id} * E_i \end{bmatrix} = (\sum_{i=1}^{V} E_i * \begin{bmatrix} u_{i1} \\ u_{i2} \\ \vdots \\ u_{id}  \end{bmatrix})^T = \mathbf{E}^T @ W_2\)</span></p>
 <p>This is a weighted sum of all context embeddings, where the weight for each context embedding <span class="math inline">\(u_i\)</span> is the prediction error <span class="math inline">\(E_i\)</span>.</p>
-<p>Notice the asymmetry in the gradient updates to W when compared to that of W’: except for row t, all other derivatives of elements of W are 0:</p>
+<p>Notice the asymmetry in the gradient updates to <span class="math inline">\(W_1\)</span> when compared to that of <span class="math inline">\(W_2\)</span>: except for row t, all other derivatives of elements of <span class="math inline">\(W_1\)</span> are 0:</p>
 <p>Hence <span class="math inline">\(dW_1 = \begin{bmatrix} 0 &amp;&amp; \dots &amp;&amp; 0 &amp;&amp; \dots &amp;&amp; d-times \\ \vdots \\ (dW_1)_{t, 1} &amp;&amp; (dW_1)_{t, 2} \dots &amp;&amp; (dW_1)_{t, d} \\ \vdots \end{bmatrix}\)</span></p>
 <p>There’s a beautiful asymmetry in these updates:</p>
 <ul>
@@ -925,7 +925,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td>6. Output grad</td>
-<td><span class="math inline">\(W'\)</span> update (Dense)</td>
+<td><span class="math inline">\(W_2\)</span> update (Dense)</td>
 <td><span class="math inline">\(dW_2 = \mathbf{E} \otimes_{outer} \mathbf{v}_t\)</span></td>
 <td>(<span class="math inline">\(V \times d\)</span>) <span class="math inline">\(\otimes_{outer}\)</span> (<span class="math inline">\(V \times 1\)</span>) -&gt; (<span class="math inline">\(V \times d\)</span>)</td>
 </tr>
@@ -1534,7 +1534,7 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <h3 class="anchored" data-anchor-id="parameter-sizes">Parameter sizes</h3>
 <p><strong>Parameters</strong></p>
 <p>The model has two embedding matrices:</p>
-<p><span class="math inline">\(W \in \mathbb{R}^{V \times d}\)</span> — center word embeddings <span class="math inline">\(W' \in \mathbb{R}^{V \times d}\)</span> — context word embeddings Total free parameters:</p>
+<p><span class="math inline">\(W_1 \in \mathbb{R}^{V \times d}\)</span> — center word embeddings <span class="math inline">\(W_2 \in \mathbb{R}^{V \times d}\)</span> — context word embeddings Total free parameters:</p>
 <p><span class="math display">\[|\theta| = 2 \times V \times d\]</span></p>
 <p>For typical values <span class="math inline">\(V = 50{,}000\)</span> and <span class="math inline">\(d = 300\)</span>:</p>
 <p><span class="math display">\[|\theta| = 2 \times 50{,}000 \times 300 = 30{,}000{,}000 \quad (30\text{M parameters})\]</span></p>
@@ -1680,7 +1680,7 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <p><span class="math display">\[M \approx U_d \Sigma_d V_d^T\]</span></p>
 <p>where the rows of <span class="math inline">\(U_d \in \mathbb{R}^{|V| \times d}\)</span> are the <span class="math inline">\(d\)</span>-dimensional word embeddings.</p>
 <p>The connection to Word2Vec was made precise by Levy &amp; Goldberg (2014), who showed that Skip-Gram with Negative Sampling implicitly factorizes the Pointwise Mutual Information (PMI) matrix of word-context co-occurrences:</p>
-<p><span class="math display">\[W \cdot W'^T \approx M^{\text{PMI}} - \log k\]</span></p>
+<p><span class="math display">\[W_1 \cdot W_2^T \approx M^{\text{PMI}} - \log k\]</span></p>
 <p>where <span class="math inline">\(k\)</span> is the number of negative samples. So Word2Vec is doing matrix factorization — but implicitly, through stochastic gradient descent on a prediction objective, rather than explicitly via SVD.</p>
 <blockquote class="blockquote">
 <table class="caption-top table">
@@ -1718,8 +1718,8 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <p><strong>Are We Solving an Over-Specified Linear Algebra Problem?</strong></p>
 <p>The Setup</p>
 <p>When we train a Word2Vec Skip-Gram network, we are looking for two matrices:</p>
-<p><span class="math display">\[W \in \mathbb{R}^{|V| \times d} \quad \text{(target embeddings)}\]</span> <span class="math display">\[W' \in \mathbb{R}^{|V| \times d} \quad \text{(context embeddings)}\]</span></p>
-<p>The product <span class="math inline">\(W \cdot W'^T \in \mathbb{R}^{|V| \times |V|}\)</span> should approximate the PMI matrix of word-context co-occurrences (as Levy &amp; Goldberg showed). That target matrix has <span class="math inline">\(|V|^2\)</span> entries. But our two embedding matrices together have only <span class="math inline">\(2 \cdot |V| \cdot d\)</span> free parameters.</p>
+<p><span class="math display">\[W_1 \in \mathbb{R}^{|V| \times d} \quad \text{(target embeddings)}\]</span> <span class="math display">\[W_2 \in \mathbb{R}^{|V| \times d} \quad \text{(context embeddings)}\]</span></p>
+<p>The product <span class="math inline">\(W_1 \cdot W_2^T \in \mathbb{R}^{|V| \times |V|}\)</span> should approximate the PMI matrix of word-context co-occurrences (as Levy &amp; Goldberg showed). That target matrix has <span class="math inline">\(|V|^2\)</span> entries. But our two embedding matrices together have only <span class="math inline">\(2 \cdot |V| \cdot d\)</span> free parameters.</p>
 <p>For a typical vocabulary of <span class="math inline">\(|V| = 50{,}000\)</span> and <span class="math inline">\(d = 300\)</span>:</p>
 <p>Entries to approximate: <span class="math inline">\(50{,}000^2 = 2.5 \times 10^9\)</span> Free parameters: <span class="math inline">\(2 \times 50{,}000 \times 300 = 30{,}000{,}000\)</span> We have roughly 83× fewer parameters than constraints. So yes — this is a massively under-determined (not over-specified) system in the sense that we cannot exactly satisfy all constraints simultaneously. We are forced to find the best low-rank approximation.</p>
 <p><strong>The Correct Framing: Under-Determined, Not Over-Specified</strong></p>
@@ -1729,7 +1729,7 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <li>Under-determined: fewer equations than unknowns — infinitely many exact solutions exist, we need a regularizer to pick one</li>
 <li>What Word2Vec actually is: a combination of both, depending on how you look at it From the matrix factorization perspective: we have <span class="math inline">\(|V|^2\)</span> target values but only <span class="math inline">\(2|V|d\)</span> parameters — this is over-determined in the sense that we cannot fit all targets exactly with a rank-<span class="math inline">\(d\)</span> matrix. We are finding the best rank-<span class="math inline">\(d\)</span> approximation, exactly like truncated SVD.</li>
 </ul>
-<p>From the neural network optimization perspective: the loss function is non-convex, the gradient descent trajectory is stochastic, and the solution is not unique — many different <span class="math inline">\((W, W')\)</span> pairs achieve similar loss values. This is under-determined in the sense that the solution is not unique.</p>
+<p>From the neural network optimization perspective: the loss function is non-convex, the gradient descent trajectory is stochastic, and the solution is not unique — many different <span class="math inline">\((W_1, W_2)\)</span> pairs achieve similar loss values. This is under-determined in the sense that the solution is not unique.</p>
 <p><strong>The Deeper Connection: Why Low Rank Works</strong></p>
 <p>The reason this works at all — why a rank-<span class="math inline">\(d\)</span> approximation captures meaningful structure — is that the true PMI matrix is approximately low rank. Language has far fewer independent dimensions of meaning than it has words. The top singular vectors of the co-occurrence matrix capture the dominant semantic axes: topics, syntactic roles, sentiment, etc. Everything else is noise.</p>
 <p>This is the same reason PCA works for faces, or why a 300-dimensional embedding can represent 50,000 words: the intrinsic dimensionality of the data is much lower than its surface dimensionality.</p>
@@ -1855,9 +1855,9 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <p>The Deeper Issue: Conflicting Supervision</p>
 <p>There’s an even more fundamental reason zero loss is unattainable in practice. The same word <span class="math inline">\(c\)</span> appears as a context word for many different center words — and also as a center word itself, generating its own context predictions. The training pairs are mutually contradictory:</p>
 <ul>
-<li>Pair <span class="math inline">\((t_1, c)\)</span> says: “given <span class="math inline">\(t_1\)</span>, predict <span class="math inline">\(c\)</span> with high probability” — pushes <span class="math inline">\(\mathbf{u}c\)</span> toward <span class="math inline">\(\mathbf{v}{t_1}\)</span></li>
-<li>Pair <span class="math inline">\((t_2, c)\)</span> says: “given <span class="math inline">\(t_2\)</span>, predict <span class="math inline">\(c\)</span> with high probability” — pushes <span class="math inline">\(\mathbf{u}c\)</span> toward <span class="math inline">\(\mathbf{v}{t_2}\)</span></li>
-<li>Pair <span class="math inline">\((t_3, w eq c)\)</span> says: “given <span class="math inline">\(t_3\)</span>, do NOT predict <span class="math inline">\(c\)</span>” — pulls <span class="math inline">\(\mathbf{u}c\)</span> away from <span class="math inline">\(\mathbf{v}{t_3}\)</span></li>
+<li>Pair <span class="math inline">\((t_1, c)\)</span> says: “given <span class="math inline">\(t_1\)</span>, predict <span class="math inline">\(c\)</span> with high probability” — pushes <span class="math inline">\(\mathbf{u}_c\)</span> toward <span class="math inline">\(\mathbf{v}_{t_1}\)</span></li>
+<li>Pair <span class="math inline">\((t_2, c)\)</span> says: “given <span class="math inline">\(t_2\)</span>, predict <span class="math inline">\(c\)</span> with high probability” — pushes <span class="math inline">\(\mathbf{u}_c\)</span> toward <span class="math inline">\(\mathbf{v}_{t_2}\)</span></li>
+<li>Pair <span class="math inline">\((t_3, w eq c)\)</span> says: “given <span class="math inline">\(t_3\)</span>, do NOT predict <span class="math inline">\(c\)</span>” — pulls <span class="math inline">\(\mathbf{u}_c\)</span> away from <span class="math inline">\(\mathbf{v}_{t_3}\)</span></li>
 </ul>
 <p>These constraints cannot all be simultaneously satisfied with finite vectors. The model settles into a compromise — a configuration that satisfies the most important constraints as well as possible. This compromise is the embedding space. The residual loss encodes the irreducible ambiguity of language.</p>
 <p>Why This Is a Feature?</p>
@@ -1931,7 +1931,7 @@ Epoch num: 91, loss value: 2.388</code></pre>
 </section>
 <section id="positive-semi-definite-psd" class="level2">
 <h2 class="anchored" data-anchor-id="positive-semi-definite-psd">Positive Semi Definite (PSD)</h2>
-<p>Let’s say we naively try to use a single embeddings for our skip-gram model, W of size <span class="math inline">\(V \times d\)</span> instead of W and W’.</p>
+<p>Let’s say we naively try to use a single embeddings for our skip-gram model, W of size <span class="math inline">\(V \times d\)</span> instead of <span class="math inline">\(W_1\)</span> and <span class="math inline">\(W_2\)</span>.</p>
 <p>The score matrix becomes <span class="math inline">\(S = WW^T\)</span>. The input is a V dimensional vector, and we want an output vector of V dimensions representing scores that we convert into probabilities using softmax. So this is appropriate here. This also means S is a symmetric matrix <span class="math inline">\(S^T = (WW^T)^T = (W^T)^TW^T = WW^T = S\)</span></p>
 <p>A matrix of this form is called positve semi definite: For any vector <span class="math inline">\(\mathbf{z}\)</span> of size <span class="math inline">\(V \times 1\)</span>, <span class="math inline">\(\mathbf{z}^TS\mathbf{z} = \mathbf{z}^T(WW^T)\mathbf{z} = (W^T\mathbf{z})^T(W^T\mathbf{z}) = ||W^T\mathbf{z}||^2 \ge 0\)</span></p>
 <ul>
@@ -1940,14 +1940,14 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <li>The embeddings end up living in a single Euclidean space where dot products define similarty</li>
 </ul>
 <p>So, PSD severly limits on what relationships can the model represent: * We want directional context (subject vs.&nbsp;object) and hence different strengths based on role * Word frequency is not uniform (Zipf’s law) * In English where more than 40% words are polysemy (word like <code>bank</code> having different meanings in different contexts), PSD creates transitive-trelationships that are not desirable (bank ~ river, bank ~ money leading to river ~ money).</p>
-<p>Instead of PSD, the bilinear form <span class="math inline">\(S = WW'^T\)</span> allows asymmetry (context vs.&nbsp;center role played by a word) and allows for independent geometric spaces. It gives more degrees of freedom (more parameters to play with).</p>
+<p>Instead of PSD, the bilinear form <span class="math inline">\(S = W_1 W_2^T\)</span> allows asymmetry (context vs.&nbsp;center role played by a word) and allows for independent geometric spaces. It gives more degrees of freedom (more parameters to play with).</p>
 <p>The design of skip-gram creates a low rank matrix (&lt;= d being smaller than V), but symmetric adds ADDITIONAL constraint that only PSD matrices are considered.</p>
-<p>If we tie the two embedding matrices, then the score matrix becomes <span class="math inline">\(WW^T\)</span>, which is necessarily symmetric positive semidefinite and rank at most d.&nbsp;Using separate matrices allows a more general low-rank score matrix <span class="math inline">\(WW'^T\)</span>, which need not be symmetric.</p>
+<p>If we tie the two embedding matrices, then the score matrix becomes <span class="math inline">\(WW^T\)</span>, which is necessarily symmetric positive semidefinite and rank at most d.&nbsp;Using separate matrices allows a more general low-rank score matrix <span class="math inline">\(W_1W_2^T\)</span>, which need not be symmetric.</p>
 <p>A (not that useful) side note: Since usually <span class="math inline">\(d \lt\lt V\)</span>, <span class="math inline">\(WW^T\)</span> is usually PSD not PD.</p>
 </section>
 <section id="shared-vs.-separate-embeddings" class="level2">
 <h2 class="anchored" data-anchor-id="shared-vs.-separate-embeddings">Shared vs.&nbsp;Separate embeddings</h2>
-<p>If W1 = W2, there are few issues. Let’s explore them.</p>
+<p>If <span class="math inline">\(W_1 = W_2\)</span>, there are few issues. Let’s explore them.</p>
 <p><strong>Gradient interference/conflict</strong></p>
 <p>Consider “the quick brown fox …” example:</p>
 <p>With shared embeddings, <span class="math inline">\(w_{quick}\)</span> and <span class="math inline">\(w_{fox}\)</span> get pulled towards each other, at the same time, when <span class="math inline">\(w_{fox}\)</span> is center, and <span class="math inline">\(w_{quick}\)</span> is not the only context word, it would be pulled away (distribute some of the softmax probability for all context words). So, there are conflicting / dstructive (+ve and -ve) updates made to embeddings during the training leading to sub-optimal solution.</p>
@@ -1962,21 +1962,21 @@ Epoch num: 91, loss value: 2.388</code></pre>
 <p>In summary, this wastes softmax probability mass on self-prediction.</p>
 <p><strong>Gradient magnitude imbalance</strong></p>
 <p>Consider the full window-gradients.</p>
-<p>Context embedding (all V rows of W’ updated):</p>
+<p>Context embedding (all V rows of <span class="math inline">\(W_2\)</span> updated):</p>
 <blockquote class="blockquote">
-<p><span class="math inline">\(\frac{\partial \mathcal{L}}{\partial W'} = \mathbf{E} \otimes_{outer} \mathbf{v}_t = 2m\mathbf{p}-\mathbf{c\_count}\)</span></p>
+<p><span class="math inline">\(\frac{\partial \mathcal{L}}{\partial W_2} = \mathbf{E} \otimes_{outer} \mathbf{v}_t = 2m\mathbf{p}-\mathbf{c\_count}\)</span></p>
 </blockquote>
-<p>Center embedding (only one row, t-th row of W updated):</p>
+<p>Center embedding (only one row, t-th row of <span class="math inline">\(W_1\)</span> updated):</p>
 <blockquote class="blockquote">
-<p><span class="math inline">\(\frac{\partial \mathcal{L}}{\partial \mathbf{v}_t} = \mathbf{E}^T W'\)</span></p>
+<p><span class="math inline">\(\frac{\partial \mathcal{L}}{\partial \mathbf{v}_t} = \mathbf{E}^T W_2\)</span></p>
 </blockquote>
 <p>So, with separate embeddings the context embeddings get V updates per step (dense) while center embeddings get only 1 update that correspond to center word (sparse). This is asymmetry and balanced by the fact that different words take turns being center. But with shared embeddings every word gets both the context gradient (from all V words) and the center gradient (when it’s the center). The context gradient is V times larger in magnitude than center gradient. The center gradient gets drowned out by the context gradient noise. Learning becomes instable.</p>
 <p><strong>Loss of expressiveness (of model)</strong></p>
 <p>Separate embeddings give the model <span class="math inline">\(2*V*d\)</span> parameters to work with. Shared embeddings reduce this to <span class="math inline">\(V*d\)</span> parameters — a 50% reduction in capacity.</p>
 <p>More importantly, the two embedding spaces serve different semantic roles:</p>
 <ul>
-<li>Center embeddings (W): “What contexts does this word predict?”</li>
-<li>Context embeddings (C): “What center words predict this context?”</li>
+<li>Center embeddings (<span class="math inline">\(W_1\)</span>): “What contexts does this word predict?”</li>
+<li>Context embeddings (<span class="math inline">\(W_2\)</span>): “What center words predict this context?”</li>
 </ul>
 <p>These are dual perspectives on co-occurrence. Forcing them to be identical loses this duality.</p>
 <p>For example:</p>
